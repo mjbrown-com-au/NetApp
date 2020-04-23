@@ -1,0 +1,1 @@
+vol create -volume NFS_DR01_Linux -aggregate aggr1_node1_ssd_4tb_dr -size 6TB -state online -policy nfs -type RW -snapshot-policy none -foreground true -junction-path /NFS_DR01_Linux_SIEM1 -security-style unix -autosize-grow-threshold-percent 87 -max-autosize 8TB -space-guarantee none -percent-snapshot-space 0 -vserver SVM -autosize-mode grow_shrink
