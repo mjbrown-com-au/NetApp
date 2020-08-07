@@ -1,0 +1,36 @@
+<#
+Use the ShareName when getting the $files variable 
+
+Get-NcCifsShare
+
+CifsServer ShareName                Path                              Comment                       
+---------- ---------                ----                              -------                       
+CIFS  Accounting                   /cifs_accounting                  Accounting                    
+       
+#>
+
+#Connect to NetApp  
+Connect-NcController -Name NETAPP -Credential (Get-Credential) #$credential
+
+#Get list of CIFS open files. 
+$files = Get-NcCifsSessionFile | ?{$_.Share -eq "Public"}
+
+#For each of the open files, find the CIFS session information. 
+$Openfiles = @()
+foreach($file in $files) {
+
+$session = Get-NcCifsSession -ConnectionId $file.connectionId | Get-Unique
+
+$a = New-Object Object | Add-Member -MemberType:noteproperty -Name:"File Path" -Value:$($file.path) -passthru
+$a = $a | Add-Member -MemberType:noteproperty -Name:"Share" -Value:$($file.share) -passthru 
+$a = $a | Add-Member -MemberType:noteproperty -Name:"Users" -Value:$($session.WindowsUser) -passthru 
+$a = $a | Add-Member -MemberType:noteproperty -Name:"Users Computer" -Value:$($session.Address) -passthru 
+$a = $a | Add-Member -MemberType:noteproperty -Name:"SAN LIF Address" -Value:$($session.LifAddress) -passthru 
+$a = $a | Add-Member -MemberType:noteproperty -Name:"Connected Time" -Value:$($session.ConnectedTime) -passthru 
+$Openfiles += $a 
+}
+
+#Output list of file and sessions information
+$Openfiles |Sort 'file path' | ft -AutoSize
+
+$Openfiles | Export-Csv 'C:\Scripts\openfiles.csv'
