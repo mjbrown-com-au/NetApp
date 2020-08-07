@@ -18,7 +18,7 @@ $ReportOutput ="<h1><center>NetApp Cluster Replication Report</center></h1>"
 Import-Module DataONTAP
 $targetdate = (get-date) 
 $credential= Import-Clixml C:\Scripts\NetappSecureCredentialsBK-new.xml
-Connect-NcController -Name corp-bk-na -Credential $credential
+Connect-NcController -Name Netapp -Credential $credential
 
 $ReportOutput += "<h2>Report run on: $targetdate</h2>" 
 
